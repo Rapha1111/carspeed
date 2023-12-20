@@ -23,7 +23,7 @@
     </style>
 </head>
 <body>
-    <div id="speed">En attente de la géolocalisation...</div>
+    <div id="speed">En attente...</div>
 
     <script>
         // Vérifier si le navigateur prend en charge la géolocalisation
@@ -36,17 +36,17 @@
                     const speedKMH = position.coords.speed * 3.6;
 
                     // Mettre à jour l'affichage de la vitesse
-                    document.getElementById("speed").textContent = `Votre vitesse : ${speedKMH.toFixed(2)} km/h`;
+                    document.getElementById("speed").textContent = `${speedKMH.toFixed(2)} km/h`;
                 },
                 // Erreur
                 function (error) {
                     console.error("Erreur de géolocalisation :", error.message);
-                    document.getElementById("speed").textContent = "Impossible de récupérer la vitesse.";
+                    document.getElementById("speed").textContent = "Erreur";
                 }
             );
         } else {
             // Le navigateur ne prend pas en charge la géolocalisation
-            document.getElementById("speed").textContent = "La géolocalisation n'est pas prise en charge par votre navigateur.";
+            document.getElementById("speed").textContent = "Non pris en charge";
         }
     </script>
 </body>
