@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vitesse en direct</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        #speed {
+            font-size: 4em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="speed">En attente de la géolocalisation...</div>
+
+    <script>
+        // Vérifier si le navigateur prend en charge la géolocalisation
+        if ("geolocation" in navigator) {
+            // Demander la géolocalisation
+            navigator.geolocation.watchPosition(
+                // Succès
+                function (position) {
+                    // Calculer la vitesse en km/h
+                    const speedKMH = position.coords.speed * 3.6;
+
+                    // Mettre à jour l'affichage de la vitesse
+                    document.getElementById("speed").textContent = `Votre vitesse : ${speedKMH.toFixed(2)} km/h`;
+                },
+                // Erreur
+                function (error) {
+                    console.error("Erreur de géolocalisation :", error.message);
+                    document.getElementById("speed").textContent = "Impossible de récupérer la vitesse.";
+                }
+            );
+        } else {
+            // Le navigateur ne prend pas en charge la géolocalisation
+            document.getElementById("speed").textContent = "La géolocalisation n'est pas prise en charge par votre navigateur.";
+        }
+    </script>
+</body>
+</html>
