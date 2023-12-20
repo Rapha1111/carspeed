@@ -14,39 +14,69 @@
             justify-content: center;
             height: 100vh;
             background-color: #f0f0f0;
+            overflow: hidden;
         }
 
         #speed {
-            font-size: 4em;
+            font-size: 10vw;
             text-align: center;
         }
     </style>
 </head>
 <body>
-    <div id="speed">En attente...</div>
+    <div id="speed">En attente de la géolocalisation...</div>
 
     <script>
         // Vérifier si le navigateur prend en charge la géolocalisation
-        if ("geolocation" in navigator) {
-            // Demander la géolocalisation
-            navigator.geolocation.watchPosition(
-                // Succès
-                function (position) {
-                    // Calculer la vitesse en km/h
-                    const speedKMH = position.coords.speed * 3.6;
-
-                    // Mettre à jour l'affichage de la vitesse
-                    document.getElementById("speed").textContent = `${speedKMH.toFixed(2)} km/h`;
-                },
-                // Erreur
-                function (error) {
-                    console.error("Erreur de géolocalisation :", error.message);
-                    document.getElementById("speed").textContent = "Erreur";
+        if ("geolocation" in navigator && "permissions" in navigator) {
+            // Vérifier et demander la permission une seule fois
+            navigator.permissions.query({ name: 'geolocation' }).then(permissionStatus => {
+                if (permissionStatus.state === 'granted') {
+                    // La permission est déjà accordée, commencer la mise à jour
+                    startUpdatingSpeed();
+                } else {
+                    // Demander la permission
+                    permissionStatus.onchange = function () {
+                        if (permissionStatus.state === 'granted') {
+                            // Permission accordée, commencer la mise à jour
+                            startUpdatingSpeed();
+                        } else {
+                            // L'utilisateur a refusé la permission
+                            document.getElementById("speed").textContent = "Permission refusée. Impossible de récupérer la vitesse.";
+                        }
+                    };
+                    navigator.geolocation.getCurrentPosition(() => {}, () => {});
                 }
-            );
+            });
+
+            function startUpdatingSpeed() {
+                // Mettre à jour la vitesse à intervalles réguliers (par exemple, toutes les secondes)
+                const updateInterval = 100; // en millisecondes
+                setInterval(updateSpeed, updateInterval);
+            }
+
+            function updateSpeed() {
+                // Demander la géolocalisation
+                navigator.geolocation.getCurrentPosition(
+                    // Succès
+                    function (position) {
+                        // Calculer la vitesse en km/h
+                        const speedKMH = position.coords.speed * 3.6;
+
+                        // Mettre à jour l'affichage de la vitesse
+                        document.getElementById("speed").textContent = `${speedKMH.toFixed(2)} km/h`;
+                    },
+                    // Erreur
+                    function (error) {
+                        console.error("Erreur de géolocalisation :", error.message);
+                        document.getElementById("speed").textContent = "Erreur";
+                    }
+                );
+            }
+
         } else {
-            // Le navigateur ne prend pas en charge la géolocalisation
-            document.getElementById("speed").textContent = "Non pris en charge";
+            // Le navigateur ne prend pas en charge la géolocalisation ou la permission
+            document.getElementById("speed").textContent = "La géolocalisation n'est pas prise en charge par votre navigateur.";
         }
     </script>
 </body>
